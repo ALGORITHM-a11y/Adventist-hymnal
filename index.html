@@ -3,35 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilingual Adventist Hymns</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to CSS file if needed -->
+    <title>Interactive Hymn Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .hymn {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Bilingual Adventist Hymns</h1>
-        <nav>
-            <ul>
-                <li><a href="#english">English Hymns</a></li>
-                <li><a href="#spanish">Cantos en Español</a></li>
-            </ul>
-        </nav>
-    </header>
+    <h1>Hymn Search Application</h1>
+    <input type="text" id="search" placeholder="Search for a hymn..." onkeyup="filterHymns()">
+    <div id="hymn-list"></div>
+    <script>
+        const hymns = [];
 
-    <main>
-        <section id="english">
-            <h2>English Hymns</h2>
-            <!-- English hymns displayed here -->
-        </section>
-        <section id="spanish">
-            <h2>Cantos en Español</h2>
-            <!-- Spanish hymns displayed here -->
-        </section>
-    </main>
+        fetch('hymns.json')
+            .then(response => response.json())
+            .then(data => {
+                hymns.push(...data);
+                displayHymns(data);
+            });
 
-    <footer>
-        <p>&copy; 2026 Bilingual Adventist Hymns</p>
-    </footer>
+        function displayHymns(hymns) {
+            const hymnList = document.getElementById('hymn-list');
+            hymnList.innerHTML = '';
+            hymns.forEach(hymn => {
+                const hymnDiv = document.createElement('div');
+                hymnDiv.className = 'hymn';
+                hymnDiv.innerHTML = `<h2>${hymn.number}: ${hymn.title}</h2>
+                                    <p><strong>Author:</strong> ${hymn.author}<br>
+                                    <strong>Composer:</strong> ${hymn.composer}<br>
+                                    <strong>Scripture:</strong> ${hymn.scripture.join(', ')}<br>
+                                    <strong>Twi:</strong> ${hymn.twi_title}</p>`;
+                hymnList.appendChild(hymnDiv);
+            });
+        }
 
-    <script src="script.js"></script> <!-- Link to JS file if needed -->
+        function filterHymns() {
+            const input = document.getElementById('search').value.toLowerCase();
+            const filteredHymns = hymns.filter(hymn => hymn.title.toLowerCase().includes(input) || hymn.twi_title.toLowerCase().includes(input));
+            displayHymns(filteredHymns);
+        }
+    </script>
 </body>
 </html>
